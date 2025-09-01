@@ -1,0 +1,67 @@
+from lib.file import yaml_read
+from jinja2 import Environment, FileSystemLoader
+from datetime import datetime
+import uuid
+import logging
+import json
+import glob
+
+def royalts_parse_from_yaml():
+    
+    files_path = glob.glob('tmp/*.yml')
+
+    folder_structure = {}
+    
+    for file_path in files_path:
+        logging.getLogger('ssh_conn_generator').info(f"Processing file: {file_path}")
+        parent_folder = file_path.split('/')[-1].replace('.yml', '')
+        vms = yaml_read(f"{file_path}")
+        folder_structure = folder_structure | royalts_parse_folder_structure(vms, parent_folder)
+        logging.getLogger('ssh_conn_generator').debug(f"Folder structure {json.dumps(folder_structure, indent=2)}")
+    
+    logging.getLogger('ssh_conn_generator').info(f"About to generate rtsz file on tmp/royalts_output.rtsz")
+    royalts_generate_file(folder_structure, vms)
+    logging.getLogger('ssh_conn_generator').info(f"Finished generating rtsz file on tmp/royalts_output.rtsz")
+
+def royalts_parse_folder_structure(vm_list, parent_folder=""):
+
+    vcenter_folder_structure = []
+
+    for vm in vm_list:
+        vm['path'].insert(0, parent_folder)
+        vcenter_folder_structure.append('/'.join(vm['path']))
+    
+    vcenter_folder_structure_cleaned = set(vcenter_folder_structure)
+    vcenter_folder_structure_cleaned = royalts_folder_structure_fill_gaps(vcenter_folder_structure_cleaned)
+    vcenter_folder_structure_cleaned = sorted(vcenter_folder_structure_cleaned)
+
+    print(vcenter_folder_structure_cleaned)
+
+    royal_ts_folder_structure = {}
+    for folder in vcenter_folder_structure_cleaned:
+        royal_ts_folder_structure[folder] = str(uuid.uuid4())
+
+    return royal_ts_folder_structure
+
+def royalts_folder_structure_fill_gaps(folder_structure):
+
+    folder_structure_preparation = list(folder_structure)
+
+    for folder in folder_structure_preparation:
+        if "/".join(folder.split("/")[:-1]) not in folder_structure_preparation and "/".join(folder.split("/")[:-1]) != "":
+            folder_structure_preparation.append("/".join(folder.split("/")[:-1]))
+
+    return folder_structure_preparation
+
+def royalts_generate_file(folder_structure, vms):
+    
+    env = Environment(loader=FileSystemLoader('templates/'))
+    template = env.get_template('royalts.rtsz.j2')
+
+    #ej. date = "10/10/2025 10:10:10.000"
+    date = datetime.now().strftime("%d/%m/%Y %H:%M:%S.000")
+
+    output_from_parsed_template = template.render(folder_structure=folder_structure, vms=vms, date=date)
+
+    with open("tmp/royalts_output.rtsz", "w") as fh:
+        fh.write(output_from_parsed_template)

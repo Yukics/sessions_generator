@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RTSZDocument>
+    <RoyalDocument>
+        <ID>a8a1b549-7e1b-4a82-9b21-c0300241b9d2</ID>
+        <Modified>{{ date }}</Modified>
+        <ModifiedBy>Ansible</ModifiedBy>
+        <Name>Global</Name>
+        <Created>{{ date }}</Created>
+        <CreatedBy>Ansible</CreatedBy>
+        <PositionNr>0</PositionNr>
+        <IsExpanded>False</IsExpanded>
+        <Color>#92D050</Color>
+        <CredentialId>d5e8cff6-e609-4d3b-9442-0f8b617eb354</CredentialId>
+        <CredentialMode>3</CredentialMode>
+        <CustomImageList>{}</CustomImageList>
+        <Description>Centralized Remote Manager Connections.</Description>
+        <DocumentType>Workspace</DocumentType>
+        <LockdownFeaturesInUse>{}</LockdownFeaturesInUse>
+        <Notes></Notes>
+        <PasswordHash>D6C1E1AF62B18DD83F21D0763617C399F56F6D9193EC8A42EBFBF772A51F62645256FB1ECA49ADE36E35A286D88833C7F006D72A67360B01ED18055E243537B6B5CC7AC754EF1E6319904FE44AD63CE6772E8F0715DA8A08B4C16A98D6AA5BDBE8A28F61647EA8CFED0C715968E91393D6DE7D18DF0FF7FF85E169B5BF401F05</PasswordHash>
+        <SaveOption>2</SaveOption>
+    </RoyalDocument>
+    <RoyalTrash>
+        <ID>8114004c-04d9-4a04-b200-d844f7d6fb72</ID>
+        <Name>Trashcan</Name>
+        <Modified>01/23/2025 11:21:21.098</Modified>
+        <Created>11/23/2015 12:37:29</Created>
+        <ModifiedBy>Ansible</ModifiedBy>
+        <CreatedBy>Ansible</CreatedBy>
+        <PositionNr>2</PositionNr>
+        <IsExpanded>False</IsExpanded>
+        <ParentID>a8a1b549-7e1b-4a82-9b21-c0300241b9d2</ParentID>
+    </RoyalTrash>
+{% for key, value in folder_structure.items() %}
+    <RoyalFolder>
+        <ID>{{ value }}</ID>
+        <Name>{{ key.split('/')[-1] | join('') }}</Name>
+        <Modified>{{ date }}</Modified>
+        <Created>{{ date }}</Created>
+        <ModifiedBy>Ansible</ModifiedBy>
+        <CreatedBy>Ansible</CreatedBy>
+        {# <PositionNr>4</PositionNr> #}
+        <IsExpanded>False</IsExpanded>
+        <ParentID>{{ folder_structure[key.split('/')[:-1] | join('/')] | default("a8a1b549-7e1b-4a82-9b21-c0300241b9d2") }}</ParentID>
+        <CredentialAutologon>True</CredentialAutologon>
+{% if key.split('/')[:-1] | length == 0 %}
+        <CredentialMode>4</CredentialMode>
+        <CredentialFromParent>False</CredentialFromParent>
+        <CredentialName>intbluekiri</CredentialName>
+        <CredentialId>00000000-0000-0000-0000-000000000000</CredentialId>
+{% else %}
+        <CredentialFromParent>True</CredentialFromParent>
+{% endif %}
+    </RoyalFolder>
+{% endfor %}
+{% for item in vms -%}
+{% if 'Windows' in item.guest %}
+    <RoyalRDSConnection>
+        <ID>{{ item.uuid }}</ID>
+        <Name>{{ item.name }}</Name>
+        <Notes>{{ item.guest }}</Notes>
+        <Modified>{{ date }}</Modified>
+        <Created>{{ date }}</Created>
+        <ModifiedBy>Ansible</ModifiedBy>
+        <CreatedBy>Ansible</CreatedBy>
+        {# <PositionNr>44</PositionNr> #}
+        <IsConnectionTemplate>False</IsConnectionTemplate>
+        <BitmapPersistence>False</BitmapPersistence>
+        <CredentialFromParent>True</CredentialFromParent>
+        <CredentialId>00000000-0000-0000-0000-000000000000</CredentialId>
+        <CustomImageList>{}</CustomImageList>
+        <MaxReconnectAttempts>0</MaxReconnectAttempts>
+        <ParentID>{{ folder_structure[item.path | join('/')] }}</ParentID>
+        <PinConnectionBar>True</PinConnectionBar>
+        <URI>{{ item.ip }}</URI>
+        <UseGlobalPlugInWin>True</UseGlobalPlugInWin>
+    </RoyalRDSConnection>
+{% else %}
+    <RoyalSSHConnection>
+        <ID>{{ item.uuid }}</ID>
+        <Name>{{ item.name }}</Name>
+        <Notes>{{ item.guest }}</Notes>
+        <Modified>{{ date }}</Modified> {# 06/02/2025 13:56:13.951 #}
+        <Created>{{ date }}</Created>
+        <ModifiedBy>Ansible</ModifiedBy>
+        <CreatedBy>Ansible</CreatedBy>
+        {# <PositionNr>256</PositionNr> #}
+        <IsConnectionTemplate>False</IsConnectionTemplate>
+        <ColorFromParent>False</ColorFromParent>
+        <ConnectionType>ssh;SSH Connection</ConnectionType>
+        <CredentialFromParent>True</CredentialFromParent>
+        <CredentialId>00000000-0000-0000-0000-000000000000</CredentialId>
+        <CustomImageList>{}</CustomImageList>
+        <Favorite>False</Favorite>
+        <Fingerprint></Fingerprint>
+        <FingerprintAlgorithm></FingerprintAlgorithm>
+        <IsSerialPortConnection>False</IsSerialPortConnection>
+        <IsTelnetConnection>False</IsTelnetConnection>
+        <ParentID>{{ folder_structure[item.path | join('/')] }}</ParentID>
+        <Port>22</Port>
+        <URI>{{ item.ip }}</URI>
+    </RoyalSSHConnection>
+{% endif %}
+{% endfor %}
+</RTSZDocument>

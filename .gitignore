@@ -1,0 +1,7 @@
+.venv/
+.env
+*.rtsz
+src/conf/*.yml
+src/lib/__pycache__
+src/logs
+src/tmp

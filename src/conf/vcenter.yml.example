@@ -1,0 +1,4 @@
+vcenter:
+  - url: 'johndoe.example.com' # without https://
+    user: 'example'
+    password: '*********************'
