@@ -15,6 +15,6 @@ def load_conf():
 		current_conf_loaded = yaml_read(f"conf/{conf_file}")
 		current_conf_main_key = list(current_conf_loaded.keys())[0]
 		conf_loaded[current_conf_main_key] = current_conf_loaded[current_conf_main_key]
-		logging.getLogger('ssh_conn_generator').debug(f"Conf loaded from file: {conf_file}")
+		logging.getLogger('sessions_generator').debug(f"Conf loaded from file: {conf_file}")
 	
 	return conf_loaded

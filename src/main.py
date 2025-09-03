@@ -11,15 +11,15 @@ if __name__ == "__main__":
 
 	setup_logging()
 	
-	logging.getLogger('ssh_conn_generator').info("🚀 Starting script")
-	logging.getLogger('ssh_conn_generator').info("⚙️  About to load conf")
+	logging.getLogger('sessions_generator').info("🚀 Starting script")
+	logging.getLogger('sessions_generator').info("⚙️  About to load conf")
 	
 	conf_loaded = load_conf()
 	
-	logging.getLogger('ssh_conn_generator').debug(f"Configuration loaded: {json.dumps(replace_dict_value_recurse(conf_loaded, 'password', '******'), indent=2)}")
+	logging.getLogger('sessions_generator').debug(f"Configuration loaded: {json.dumps(replace_dict_value_recurse(conf_loaded, 'password', '******'), indent=2)}")
 
 	if not isinstance(conf_loaded, dict):
-		logging.getLogger('ssh_conn_generator').error("❌ Loaded conf is not a dict or is empty")
+		logging.getLogger('sessions_generator').error("❌ Loaded conf is not a dict or is empty")
 
 	if 'vcenter' in conf_loaded.keys():
 		vcenter_get_info(conf_loaded['vcenter'])

@@ -16,7 +16,7 @@ def setup_logging():
 		None
 	"""
 	
-	logger = logging.getLogger('ssh_conn_generator')
+	logger = logging.getLogger('sessions_generator')
 	formatter = logging.Formatter('%(asctime)s - %(name)s - [%(levelname)s] - %(message)s')
 	logger.setLevel("DEBUG")
 

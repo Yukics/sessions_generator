@@ -24,12 +24,12 @@ def vcenter_get_info(vcenter_conf):
 	for vcenter_login_conf in vcenter_conf:
 
 		# login  
-		logging.getLogger('ssh_conn_generator').info(f"About to login vcenter: {vcenter_login_conf['url']}")
+		logging.getLogger('sessions_generator').info(f"About to login vcenter: {vcenter_login_conf['url']}")
 		vcenter_logged_in = vcenter_login(vcenter_login_conf)
 
 		# fetch
 		children = vcenter_get_all_vms(vcenter_logged_in)
-		logging.getLogger('ssh_conn_generator').info(f"Retrieved {len(children)} VM from vCenter {vcenter_login_conf['url']}")
+		logging.getLogger('sessions_generator').info(f"Retrieved {len(children)} VM from vCenter {vcenter_login_conf['url']}")
 		
 		#transformation
 		vcenter_vm_info_clean = []
@@ -48,11 +48,11 @@ def vcenter_get_info(vcenter_conf):
 				'guest_tools': str(summary.guest.toolsStatus) if summary.guest else 'unknown',
 				'path': vm_folder_path
 			}
-			logging.getLogger('ssh_conn_generator').debug(f"Generated JSON:\n{json.dumps(vm_cleaned, indent=2)}")
+			logging.getLogger('sessions_generator').debug(f"Generated JSON:\n{json.dumps(vm_cleaned, indent=2)}")
 			vcenter_vm_info_clean.append(vm_cleaned)
-			logging.getLogger('ssh_conn_generator').info(f"Appending to clean VM state {summary.config.name}")
+			logging.getLogger('sessions_generator').info(f"Appending to clean VM state {summary.config.name}")
 
-		logging.getLogger('ssh_conn_generator').info(f"Created full vcenter {vcenter_login_conf['url']} inventory")
+		logging.getLogger('sessions_generator').info(f"Created full vcenter {vcenter_login_conf['url']} inventory")
 		yaml_write(vcenter_vm_info_clean,f"tmp/{vcenter_login_conf['url']}.yml")
 
 def vcenter_get_folder_path(obj, root_folders=['Datacenters', 'vm']):
@@ -72,11 +72,11 @@ def vcenter_get_folder_path(obj, root_folders=['Datacenters', 'vm']):
 	Note:
 		The function assumes that the object and its parents have a 'name' attribute and a '_moId' property.
 	"""
-	logging.getLogger('ssh_conn_generator').info(f"Getting folder path for: {obj.summary.config.name}")
+	logging.getLogger('sessions_generator').info(f"Getting folder path for: {obj.summary.config.name}")
 
 	paths = []
 	if isinstance(obj, vim.Folder):
-		logging.getLogger('ssh_conn_generator').debug(f"{obj.name} matched as a Folder so it is appended to the path")
+		logging.getLogger('sessions_generator').debug(f"{obj.name} matched as a Folder so it is appended to the path")
 		paths.append(obj.name)
 
 	thisobj = obj
@@ -84,25 +84,25 @@ def vcenter_get_folder_path(obj, root_folders=['Datacenters', 'vm']):
 		thisobj = thisobj.parent
 		try:
 			moid = thisobj._moId
-			logging.getLogger('ssh_conn_generator').debug(f"Trying to get parent from {thisobj.name} with moid {moid}")
+			logging.getLogger('sessions_generator').debug(f"Trying to get parent from {thisobj.name} with moid {moid}")
 		except AttributeError:
 			moid = None
-		logging.getLogger('ssh_conn_generator').debug(f"{moid} trying to match against {root_folders}")
+		logging.getLogger('sessions_generator').debug(f"{moid} trying to match against {root_folders}")
 		if moid in root_folders:
 			break
-		logging.getLogger('ssh_conn_generator').debug(f"{thisobj.name} trying to match against {root_folders}")
+		logging.getLogger('sessions_generator').debug(f"{thisobj.name} trying to match against {root_folders}")
 		if thisobj.name in root_folders:
 			break
 		if isinstance(thisobj, vim.Folder):
 			paths.append(thisobj.name)
 	
 
-	logging.getLogger('ssh_conn_generator').debug(f"Paths generated for {obj.summary.config.name} {str(paths)}")
+	logging.getLogger('sessions_generator').debug(f"Paths generated for {obj.summary.config.name} {str(paths)}")
 	paths.reverse()
-	logging.getLogger('ssh_conn_generator').debug(f"Reversed paths generated for {obj.summary.config.name} {str(paths)}")
+	logging.getLogger('sessions_generator').debug(f"Reversed paths generated for {obj.summary.config.name} {str(paths)}")
 
 	if paths is not None:
-		logging.getLogger('ssh_conn_generator').info(f"Folder path for {obj.summary.config.name} in {'/'.join(paths)}")
+		logging.getLogger('sessions_generator').info(f"Folder path for {obj.summary.config.name} in {'/'.join(paths)}")
 
 	return paths
 
