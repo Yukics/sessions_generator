@@ -1,0 +1,25 @@
+- hosts: localhost
+  connection: local
+  environment:
+    GIT_SSL_NO_VERIFY: 'true'
+  vars_files:
+    - conf/vcenter.yml
+  vars_prompt:
+    - name: vcenter_password
+      prompt: "vCenter password"
+      unsafe: true
+      private: true
+  tasks:
+    - name:
+      include_role:
+        name: sessions_generator
+      vars: 
+        sessions_generator_conf:
+          vcenter:
+            - url: 'vgtmadvc01vit.corp.logitravelgroup.com'
+              user: 'intbluekiri\X43470MO'
+              password: '{{ vcenter_password }}'
+
+# - hosts: remote_server
+#   tasks:
+#     - name: Sync files to new server

@@ -1,0 +1,31 @@
+- name: "Create {{ git_destination }}"
+  ansible.builtin.file:
+    state: directory
+    path: "{{ git_destination }}"
+
+- name: Clone repo
+  ansible.builtin.git:
+    repo: "{{ git_url }}"
+    dest:  "{{ git_destination }}"
+  when: git_clone_type == "git"
+
+- name: Download repo
+  ansible.builtin.unarchive:
+    src: "{{ git_url }}"
+    dest: "{{ git_destination }}"
+    remote_src: yes
+    validate_certs: false
+  when: git_clone_type == "http"
+
+- name: Generate configuration
+  copy:
+    content: "{{ sessions_generator_conf | to_nice_yaml(indent=2) }}"
+    dest: "{{ git_destination }}/src/conf/{{item}}.yml"
+  loop:
+    - vcenter
+
+# - name: Execute sessions_generator
+#   ansible.builtin.shell: |
+#     set -e
+#     cd /tmp/sessions_generator
+#     ./start.sh withdeps

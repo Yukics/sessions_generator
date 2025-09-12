@@ -1,0 +1,11 @@
+sessions_generator_conf:
+  vcenter:
+    - url: 'johndoe.example.com' # without https://
+      user: 'example'
+      password: '*********************'
+  # gcp:
+  #   url: 
+  #   api_token:
+  # etc:
+  #   url: 
+  #   api_token:

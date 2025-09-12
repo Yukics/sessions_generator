@@ -7,10 +7,9 @@ fi
 source .venv/bin/activate
 export PYTHONWARNINGS="ignore" # setuptools >81 warn
 
-echo "[INFO] pass "withdeps" as args to install dependencies from requirements.txt"
+echo "[INFO] pass "withdeps" as args to install dependencies"
 if [ "$1" == "withdeps" ]; then
-    pip3 install -r src/requirements.txt
+    pip3 install ansible
 fi
 
-cd src
-python3 main.py --log=debug
+ansible-playbook -i inventories/inventory.ini playbooks/main.yml
