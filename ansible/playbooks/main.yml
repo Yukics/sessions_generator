@@ -16,8 +16,8 @@
       vars: 
         sessions_generator_conf:
           vcenter:
-            - url: 'vgtmadvc01vit.corp.logitravelgroup.com'
-              user: 'intbluekiri\X43470MO'
+            - url: 'example.com'
+              user: 'user\example'
               password: '{{ vcenter_password }}'
 
 # - hosts: remote_server
