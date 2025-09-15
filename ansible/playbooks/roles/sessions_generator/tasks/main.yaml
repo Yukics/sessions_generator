@@ -19,13 +19,13 @@
 
 - name: Generate configuration
   copy:
-    content: "{{ sessions_generator_conf | to_nice_yaml(indent=2) }}"
-    dest: "{{ git_destination }}/src/conf/{{item}}.yml"
-  loop:
-    - vcenter
+    content: "{{ item | to_nice_yaml(indent=2) }}"
+    dest: "{{ git_destination }}/src/conf/{{ item.keys() | join('') }}.yml"
+  loop: "{{ sessions_generator_conf }}"
+  no_log: true
 
-# - name: Execute sessions_generator
-#   ansible.builtin.shell: |
-#     set -e
-#     cd /tmp/sessions_generator
-#     ./start.sh withdeps
+- name: Execute sessions_generator
+  ansible.builtin.shell: |
+    set -e
+    cd {{ git_destination }}
+    ./start.sh withdeps
