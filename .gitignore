@@ -5,3 +5,5 @@ src/conf/*.yml
 src/lib/__pycache__
 src/logs
 src/tmp
+ansible/playbooks/main-test.yml
+ansible/init-test.sh

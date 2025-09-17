@@ -2,8 +2,7 @@
   connection: local
   environment:
     GIT_SSL_NO_VERIFY: 'true'
-  vars_files:
-    - conf/vcenter.yml
+    ANSIBLE_TIMEOUT: 7200 # 2 hours
   vars_prompt:
     - name: vcenter_password
       prompt: "vCenter password"
@@ -13,12 +12,17 @@
     - name:
       include_role:
         name: sessions_generator
-      vars: 
+      vars: # it is possible to set it up on a yml file
+        sessions_generator_loglevel: INFO # DEBUG
         sessions_generator_conf:
-          vcenter:
-            - url: 'example.com'
-              user: 'user\example'
-              password: '{{ vcenter_password }}'
+          - vcenter: # check that this name is the name of file and first key on object containing everything else
+              - url: 'example.com'
+                user: 'username'
+                password: '{{ vcenter_password }}'
+          # - gcp:
+          #     - url: 
+          # - azure:
+          #     - url: 
 
 # - hosts: remote_server
 #   tasks:

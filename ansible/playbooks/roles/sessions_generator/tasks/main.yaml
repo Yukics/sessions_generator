@@ -3,13 +3,14 @@
     state: directory
     path: "{{ git_destination }}"
 
-- name: Clone repo
+- name: "Clone repo git://"
   ansible.builtin.git:
     repo: "{{ git_url }}"
     dest:  "{{ git_destination }}"
+    force: true
   when: git_clone_type == "git"
 
-- name: Download repo
+- name: "Download repo https://"
   ansible.builtin.unarchive:
     src: "{{ git_url }}"
     dest: "{{ git_destination }}"
@@ -17,12 +18,18 @@
     validate_certs: false
   when: git_clone_type == "http"
 
-- name: Generate configuration
+- name: "Generate configuration"
   copy:
     content: "{{ item | to_nice_yaml(indent=2) }}"
     dest: "{{ git_destination }}/src/conf/{{ item.keys() | join('') }}.yml"
   loop: "{{ sessions_generator_conf }}"
   no_log: true
+
+- name: "Change loglevel"
+  ansible.builtin.replace:
+    path: "{{ git_destination }}/src/lib/logs.py"
+    regexp: 'logger.setLevel\("DEBUG"\)'
+    replace: 'logger.setLevel("{{ sessions_generator_loglevel }}")'
 
 - name: Execute sessions_generator
   ansible.builtin.shell: |
